@@ -798,6 +798,9 @@ export default function App() {
   })();
   const isCurrentlyPowerLocked = activePlayer === 'p1' ? p1Status.checkmateLocked : p2Status.checkmateLocked;
   const activeMovesLeft = activePlayer === 'p1' ? p1MovesLeft : p2MovesLeft;
+  const selectedWeapon = WEAPONS.find((w) => w.id === selectedWeaponId);
+  const activePlayerName = activePlayer === 'p1' ? p1Name : p2Name;
+  const activePlayerColor = activePlayer === 'p1' ? p1Color : p2Color;
 
   return (
     <div className="w-screen h-[100dvh] bg-[#4DA8E8] text-[#1A1A1A] flex flex-col font-sans selection:bg-[#316AC5] selection:text-white overflow-hidden">
@@ -806,16 +809,48 @@ export default function App() {
         
         {/* GLOBAL HUD TOP BAR */}
         {phase === 'PLAYING' ? (
-          <header className="h-11 sm:h-14 pt-titlebar px-2 sm:px-4 md:px-6 grid grid-cols-[1fr_auto_1fr] items-center shrink-0 z-20 gap-1 sm:gap-4">
+          <>
+            {/* Mobile HUD — compact, readable */}
+            <header className="lg:hidden shrink-0 pt-titlebar px-2 py-2 z-20">
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-7 h-7 shrink-0 flex items-center justify-center text-[10px] font-bold text-[#1A1A1A] pt-panel-inset" style={{ backgroundColor: p1Color }}>P1</span>
+                    <div className="flex-1 h-4 bg-black/25 rounded overflow-hidden">
+                      <div className="h-full bg-[#43A047]" style={{ width: `${Math.max(0, p1Health)}%` }} />
+                    </div>
+                    <span className="text-xs font-bold text-white w-9 text-right">{p1Health}%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-7 h-7 shrink-0 flex items-center justify-center text-[10px] font-bold text-[#1A1A1A] pt-panel-inset" style={{ backgroundColor: p2Color }}>P2</span>
+                    <div className="flex-1 h-4 bg-black/25 rounded overflow-hidden">
+                      <div className="h-full bg-[#43A047]" style={{ width: `${Math.max(0, p2Health)}%` }} />
+                    </div>
+                    <span className="text-xs font-bold text-white w-9 text-right">{p2Health}%</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-1 shrink-0 px-1">
+                  <span className="text-[9px] text-white/80 font-bold uppercase">Wind</span>
+                  <span className="text-sm font-bold text-white">{windSpeed >= 0 ? '→' : '←'}{Math.abs(Math.round(windSpeed * 120))}</span>
+                </div>
+                <div className="flex flex-col gap-1 shrink-0">
+                  <button onClick={handleToggleSound} className="p-2 pt-panel touch-manipulation" title="Sound">{soundOn ? <Volume2 className="w-5 h-5 text-[#2E7D32]" /> : <VolumeX className="w-5 h-5" />}</button>
+                  <button onClick={resetToMenu} className="p-2 pt-panel touch-manipulation" title="Quit"><RotateCcw className="w-5 h-5 text-[#C62828]" /></button>
+                </div>
+              </div>
+            </header>
+
+            {/* Desktop HUD */}
+            <header className="hidden lg:grid h-14 pt-titlebar px-4 md:px-6 grid-cols-[1fr_auto_1fr] items-center shrink-0 z-20 gap-4">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
               <div className="w-9 h-9 pt-panel-inset shrink-0 overflow-hidden">
                 <span className="w-full h-full flex items-center justify-center font-bold text-[#1A1A1A] text-xs" style={{ backgroundColor: p1Color }}>P1</span>
               </div>
-              <div className="hidden sm:block min-w-0">
+              <div className="min-w-0">
                 <div className="text-[9px] uppercase text-white/80 font-bold leading-none">Player 1</div>
                 <div className="text-sm font-bold text-white truncate">{p1Name}</div>
               </div>
-              <div className="h-4 w-20 md:w-28 pt-panel-inset overflow-hidden relative shrink-0">
+              <div className="h-4 w-28 pt-panel-inset overflow-hidden relative shrink-0">
                 <div className="h-full bg-[#43A047] transition-all duration-300" style={{ width: `${Math.max(0, p1Health)}%` }} />
                 <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-[#1A1A1A]">{p1Health}%</span>
               </div>
@@ -828,18 +863,18 @@ export default function App() {
                 <span className="text-sm font-bold text-[#333]">{Math.abs(Math.round(windSpeed * 120))}</span>
               </div>
               <div className="flex items-center pt-panel p-0.5">
-                <button onClick={() => setShowGuide(!showGuide)} className="p-2.5 sm:p-1.5 text-[#333] hover:bg-[#B0B0B0] cursor-pointer touch-manipulation" title="Weapon Guide"><HelpCircle className="w-4 h-4 sm:w-3.5 sm:h-3.5" /></button>
-                <button onClick={handleToggleSound} className="p-2.5 sm:p-1.5 text-[#333] hover:bg-[#B0B0B0] cursor-pointer touch-manipulation" title="Toggle Sound">{soundOn ? <Volume2 className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[#2E7D32]" /> : <VolumeX className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}</button>
-                <button onClick={resetToMenu} className="p-2.5 sm:p-1.5 text-[#333] hover:bg-[#FFCDD2] cursor-pointer touch-manipulation" title="Quit Match"><RotateCcw className="w-4 h-4 sm:w-3.5 sm:h-3.5" /></button>
+                <button onClick={() => setShowGuide(!showGuide)} className="p-1.5 text-[#333] hover:bg-[#B0B0B0] cursor-pointer" title="Weapon Guide"><HelpCircle className="w-3.5 h-3.5" /></button>
+                <button onClick={handleToggleSound} className="p-1.5 text-[#333] hover:bg-[#B0B0B0] cursor-pointer" title="Toggle Sound">{soundOn ? <Volume2 className="w-3.5 h-3.5 text-[#2E7D32]" /> : <VolumeX className="w-3.5 h-3.5" />}</button>
+                <button onClick={resetToMenu} className="p-1.5 text-[#333] hover:bg-[#FFCDD2] cursor-pointer" title="Quit Match"><RotateCcw className="w-3.5 h-3.5" /></button>
               </div>
             </div>
 
             <div className="flex items-center gap-2 md:gap-3 min-w-0 justify-end">
-              <div className="h-4 w-20 md:w-28 pt-panel-inset overflow-hidden relative shrink-0">
+              <div className="h-4 w-28 pt-panel-inset overflow-hidden relative shrink-0">
                 <div className="h-full bg-[#43A047] transition-all duration-300" style={{ width: `${Math.max(0, p2Health)}%` }} />
                 <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-[#1A1A1A]">{p2Health}%</span>
               </div>
-              <div className="hidden sm:block text-right min-w-0">
+              <div className="text-right min-w-0">
                 <div className="text-[9px] uppercase text-white/80 font-bold leading-none">Player 2</div>
                 <div className="text-sm font-bold text-white truncate">{p2Name}</div>
               </div>
@@ -848,6 +883,7 @@ export default function App() {
               </div>
             </div>
           </header>
+          </>
         ) : (
           <header className="h-14 pt-titlebar px-6 flex items-center justify-between shrink-0 z-20">
             <div className="flex items-center gap-2.5">
@@ -891,10 +927,10 @@ export default function App() {
             <span className="text-[10px] bg-white/90 text-[#316AC5] font-bold px-3 py-1 uppercase tracking-wider pt-panel-inset inline-block">
               🇮🇳 Meme Artillery • Pocket Tanks Style
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mt-3 text-white drop-shadow-md uppercase">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mt-3 text-white drop-shadow-md uppercase">
               Meme Tanks
             </h2>
-            <p className="text-xs md:text-sm text-white/90 mt-2 leading-relaxed drop-shadow">
+            <p className="text-sm sm:text-xs md:text-sm text-white/90 mt-2 leading-relaxed drop-shadow px-2">
               Each weapon fires once per match. Move your tank forward or back up to 3 times!
             </p>
           </div>
@@ -1143,22 +1179,139 @@ export default function App() {
           </div>
         </div>
       )}
-      {/* PLAYING PHASE MAIN GAMEPLAY GRAPHICS WINDOW & CONTROL CONSOLE */}
-      {phase === 'PLAYING' &&
-        <div className="flex-1 flex flex-col min-h-0">
-          
-          <div className="flex-1 flex items-center justify-center p-1 sm:p-2 min-h-[24vh] lg:min-h-0">
-            <div className="pt-panel p-0.5 sm:p-1 w-full max-w-[1200px] mx-auto">
+      {/* PLAYING PHASE */}
+      {phase === 'PLAYING' && (
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex-1 min-h-0 flex items-center justify-center bg-[#1a3a5c]/30 px-1 lg:p-2">
+            <div className="w-full max-w-[1200px] lg:pt-panel lg:p-1">
               <canvas
                 ref={canvasRef}
-                className="w-full h-auto block touch-none"
+                className="w-full max-h-full lg:h-auto block touch-none"
                 style={{ aspectRatio: `${CANVAS_WIDTH}/${CANVAS_HEIGHT}` }}
                 id="game-canvas"
               />
             </div>
           </div>
 
-          <div id="control-drawer" className="shrink-0 px-1 sm:px-2 pb-1 sm:pb-2 max-h-[52dvh] lg:max-h-none overflow-y-auto">
+          {/* MOBILE CONTROLS */}
+          <div className="lg:hidden shrink-0 bg-[#C8C8C8] border-t-2 border-[#808080] mobile-safe-bottom">
+            {isFlying && (
+              <div className="bg-[#FFE0B2] text-[#E65100] text-sm font-bold text-center py-2">Projectile in flight...</div>
+            )}
+            {!isFlying && (
+              <div className="bg-[#316AC5] text-white text-sm font-bold text-center py-2 px-2">
+                <span className="inline-block w-3 h-3 rounded-sm mr-1.5 align-middle" style={{ backgroundColor: activePlayerColor }} />
+                {canControl ? `${activePlayerName}'s turn` : playMode === 'online' ? "Opponent's turn" : `${activePlayerName}'s turn`}
+              </div>
+            )}
+
+            {!canControl && playMode === 'online' && !isFlying && (
+              <p className="text-center text-sm text-[#555] py-6 px-4">Watch the battle — it&apos;s your opponent&apos;s turn.</p>
+            )}
+
+            {canControl && isCurrentlyBlinded && (
+              <div className="p-4 flex flex-col items-center gap-3">
+                <p className="text-sm font-bold text-[#C62828] text-center">Sensors blinded — fire blind!</p>
+                <button
+                  onClick={fireActiveWeapon}
+                  disabled={isFlying}
+                  className="w-28 h-28 rounded-full bg-red-600 active:bg-red-800 text-white text-xl font-bold shadow-lg touch-manipulation disabled:opacity-50"
+                >
+                  FIRE
+                </button>
+              </div>
+            )}
+
+            {canControl && !isCurrentlyBlinded && (
+              <div className="px-3 pt-3 pb-2 space-y-3">
+                {selectedWeapon && (
+                  <div className="flex items-center justify-between bg-[#ECE9D8] border border-[#999] px-3 py-2 rounded">
+                    <span className="text-sm font-bold text-[#1A1A1A] truncate pr-2">{selectedWeapon.name}</span>
+                    <span className="text-xs font-bold text-[#333] shrink-0">
+                      Ammo: {activePlayer === 'p1' ? (p1Stock[selectedWeapon.id] || 0) : (p2Stock[selectedWeapon.id] || 0)}
+                    </span>
+                  </div>
+                )}
+
+                <div>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-bold text-[#333]">Angle</span>
+                    <span className="text-lg font-bold text-[#E65100]">{angle}°</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => handleAngleSliderChange(Math.max(0, angle - 5))} disabled={isFlying} className="w-12 h-12 pt-panel text-xl font-bold touch-manipulation disabled:opacity-30">−</button>
+                    <input type="range" min={0} max={180} value={angle} disabled={isFlying} onChange={(e) => handleAngleSliderChange(Number(e.target.value))} className="flex-1 mobile-range accent-[#E65100]" />
+                    <button onClick={() => handleAngleSliderChange(Math.min(180, angle + 5))} disabled={isFlying} className="w-12 h-12 pt-panel text-xl font-bold touch-manipulation disabled:opacity-30">+</button>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-bold text-[#333]">Power</span>
+                    <span className="text-lg font-bold text-[#1565C0]">{power}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => handlePowerSliderChange(Math.max(2, power - 10))} disabled={isFlying || isCurrentlyPowerLocked} className="w-12 h-12 pt-panel text-xl font-bold touch-manipulation disabled:opacity-30">−</button>
+                    <input type="range" min={2} max={100} value={power} disabled={isFlying || isCurrentlyPowerLocked} onChange={(e) => handlePowerSliderChange(Number(e.target.value))} className="flex-1 mobile-range accent-[#1565C0] disabled:opacity-30" />
+                    <button onClick={() => handlePowerSliderChange(Math.min(100, power + 10))} disabled={isFlying || isCurrentlyPowerLocked} className="w-12 h-12 pt-panel text-xl font-bold touch-manipulation disabled:opacity-30">+</button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 items-stretch">
+                  <button
+                    onClick={() => moveActiveTank('back')}
+                    disabled={isFlying || activeMovesLeft <= 0}
+                    className="py-4 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center gap-0.5"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                    <span>Back</span>
+                    <span className="text-[10px] text-[#666]">{activeMovesLeft} left</span>
+                  </button>
+                  <button
+                    onClick={fireActiveWeapon}
+                    disabled={isFlying}
+                    className="py-4 rounded-2xl bg-red-600 active:bg-red-800 text-white text-2xl font-bold shadow-[0_4px_0_#991B1B] active:translate-y-1 touch-manipulation disabled:opacity-50 min-h-[72px]"
+                  >
+                    {isFlying ? 'WAIT' : 'FIRE'}
+                  </button>
+                  <button
+                    onClick={() => moveActiveTank('forward')}
+                    disabled={isFlying || activeMovesLeft <= 0}
+                    className="py-4 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center gap-0.5"
+                  >
+                    <ArrowRight className="w-5 h-5" />
+                    <span>Fwd</span>
+                    <span className="text-[10px] text-[#666]">{activeMovesLeft} left</span>
+                  </button>
+                </div>
+
+                <div>
+                  <div className="text-xs font-bold text-[#555] uppercase mb-1.5">Pick weapon</div>
+                  <div className="flex gap-2 overflow-x-auto weapon-scroll-x pb-1 -mx-1 px-1">
+                    {WEAPONS.map((w) => {
+                      const stock = activePlayer === 'p1' ? (p1Stock[w.id] || 0) : (p2Stock[w.id] || 0);
+                      const outOfAmmo = stock <= 0;
+                      const isSelected = selectedWeaponId === w.id;
+                      return (
+                        <button
+                          key={w.id}
+                          onClick={() => setSelectedWeaponId(w.id)}
+                          disabled={isFlying || outOfAmmo}
+                          className={`shrink-0 px-3 py-2.5 rounded border-2 text-xs font-bold touch-manipulation min-h-[44px] ${isSelected ? 'bg-[#316AC5] border-[#1A3A7A] text-white' : 'bg-[#ECE9D8] border-[#999] text-[#333]'} disabled:opacity-30`}
+                        >
+                          <span className="block whitespace-nowrap">{w.name}</span>
+                          <span className={`block text-center mt-0.5 ${isSelected ? 'text-yellow-200' : 'text-[#E65100]'}`}>×{stock}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* DESKTOP CONTROLS */}
+          <div id="control-drawer" className="hidden lg:block shrink-0 px-2 pb-2">
             <div className="pt-panel p-1 max-w-[1200px] mx-auto">
               <div className="pt-panel-inset p-2 sm:p-3 grid grid-cols-1 lg:grid-cols-[220px_1fr_190px] gap-2 sm:gap-3 lg:min-h-[200px]">
             
@@ -1339,7 +1492,7 @@ export default function App() {
           </div>
 
         </div>
-      }
+      )}
 
       {/* RENDER PHASE: GAME OVER SUMMARY SCREEN */}
       {phase === 'GAME_OVER' &&
@@ -1386,7 +1539,7 @@ export default function App() {
         </main>
       }
 
-      <footer className="h-7 pt-panel flex items-center justify-center text-[9px] text-[#555] shrink-0 mx-1 mb-1">
+      <footer className={`pt-panel items-center justify-center text-[9px] text-[#555] shrink-0 mx-1 mb-1 mobile-safe-bottom ${phase === 'PLAYING' ? 'hidden lg:flex h-7' : 'flex h-7'}`}>
         Meme Tanks — Pocket Tanks inspired • Pass & Play • v1.0
       </footer>
 

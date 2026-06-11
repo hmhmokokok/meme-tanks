@@ -54,7 +54,12 @@ html, body, #root {
 }
 
 body {
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  margin: 0;
+  padding: 0;
+}
+
+.mobile-safe-bottom {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
 }
 
 /* Prevent Android/iOS zoom when focusing inputs */
@@ -84,9 +89,9 @@ input, select, textarea {
 
 .mobile-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 28px;
-  height: 28px;
-  margin-top: -10px;
+  width: 32px;
+  height: 32px;
+  margin-top: -12px;
   border-radius: 50%;
   background: #316AC5;
   border: 2px solid #fff;
@@ -100,8 +105,8 @@ input, select, textarea {
 }
 
 .mobile-range::-moz-range-thumb {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #316AC5;
   border: 2px solid #fff;

@@ -1,0 +1,6 @@
+{
+  "name": "Meme Tanks",
+  "description": "A 2D artillery pass-and-play game with destructible terrain and hilarious Indian meme-themed weapons.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

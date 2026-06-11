@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Tahoma&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Tahoma, "Segoe UI", Geneva, Verdana, sans-serif;
+  --font-display: Tahoma, "Segoe UI", Geneva, Verdana, sans-serif;
+  --font-mono: "Courier New", Courier, monospace;
+
+  --color-pt-blue: #316AC5;
+  --color-pt-panel: #D4D4D4;
+  --color-pt-panel-dark: #C0C0C0;
+  --color-pt-border-light: #FFFFFF;
+  --color-pt-border-dark: #808080;
+  --color-pt-sky: #5BA3E8;
+  --color-pt-grass: #4CAF50;
+  --color-pt-fire: #E53935;
+}
+
+/* Classic Windows-style 3D panel borders */
+.pt-panel {
+  background: var(--color-pt-panel);
+  border: 2px solid;
+  border-color: var(--color-pt-border-light) var(--color-pt-border-dark) var(--color-pt-border-dark) var(--color-pt-border-light);
+}
+
+.pt-panel-inset {
+  background: #ECE9D8;
+  border: 2px solid;
+  border-color: var(--color-pt-border-dark) var(--color-pt-border-light) var(--color-pt-border-light) var(--color-pt-border-dark);
+}
+
+.pt-titlebar {
+  background: linear-gradient(180deg, #3A6EA5 0%, #316AC5 50%, #2451A8 100%);
+  border-bottom: 2px solid #1A3A7A;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #C0C0C0;
+  border: 1px inset #808080;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #808080;
+  border: 1px outset #A0A0A0;
+}

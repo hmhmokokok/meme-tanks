@@ -1135,7 +1135,7 @@ export default function App() {
 
           <div className="mt-6 text-center text-[10px] text-white/80 max-w-md drop-shadow px-2">
             <span className="hidden sm:inline"><span className="font-bold">↑/↓</span> aim • <span className="font-bold">←/→</span> power • <span className="font-bold">A/D</span> move • <span className="font-bold">Space</span> fire</span>
-            <span className="sm:hidden">Use on-screen sliders &amp; buttons to aim, move, and fire</span>
+            <span className="sm:hidden">Use sliders &amp; buttons to play. Rotate to landscape for a bigger battlefield.</span>
           </div>
 
         </main>
@@ -1182,11 +1182,11 @@ export default function App() {
       {/* PLAYING PHASE */}
       {phase === 'PLAYING' && (
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex-1 min-h-0 flex items-center justify-center bg-[#1a3a5c]/30 px-1 lg:p-2">
-            <div className="w-full max-w-[1200px] lg:pt-panel lg:p-1">
+          <div className="flex-1 min-h-[42dvh] lg:min-h-0 flex items-center justify-center bg-[#1a3a5c]/30 px-0.5 lg:p-2">
+            <div className="w-full h-full max-w-[1200px] flex items-center justify-center lg:pt-panel lg:p-1">
               <canvas
                 ref={canvasRef}
-                className="w-full max-h-full lg:h-auto block touch-none"
+                className="w-full h-auto max-h-full lg:h-auto block touch-none"
                 style={{ aspectRatio: `${CANVAS_WIDTH}/${CANVAS_HEIGHT}` }}
                 id="game-canvas"
               />
@@ -1194,7 +1194,7 @@ export default function App() {
           </div>
 
           {/* MOBILE CONTROLS */}
-          <div className="lg:hidden shrink-0 bg-[#C8C8C8] border-t-2 border-[#808080] mobile-safe-bottom">
+          <div className="lg:hidden shrink-0 max-h-[46dvh] overflow-y-auto bg-[#C8C8C8] border-t-2 border-[#808080] mobile-safe-bottom">
             {isFlying && (
               <div className="bg-[#FFE0B2] text-[#E65100] text-sm font-bold text-center py-2">Projectile in flight...</div>
             )}
@@ -1223,84 +1223,75 @@ export default function App() {
             )}
 
             {canControl && !isCurrentlyBlinded && (
-              <div className="px-3 pt-3 pb-2 space-y-3">
-                {selectedWeapon && (
-                  <div className="flex items-center justify-between bg-[#ECE9D8] border border-[#999] px-3 py-2 rounded">
-                    <span className="text-sm font-bold text-[#1A1A1A] truncate pr-2">{selectedWeapon.name}</span>
-                    <span className="text-xs font-bold text-[#333] shrink-0">
-                      Ammo: {activePlayer === 'p1' ? (p1Stock[selectedWeapon.id] || 0) : (p2Stock[selectedWeapon.id] || 0)}
-                    </span>
-                  </div>
-                )}
-
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-bold text-[#333]">Angle</span>
-                    <span className="text-lg font-bold text-[#E65100]">{angle}°</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => handleAngleSliderChange(Math.max(0, angle - 5))} disabled={isFlying} className="w-12 h-12 pt-panel text-xl font-bold touch-manipulation disabled:opacity-30">−</button>
-                    <input type="range" min={0} max={180} value={angle} disabled={isFlying} onChange={(e) => handleAngleSliderChange(Number(e.target.value))} className="flex-1 mobile-range accent-[#E65100]" />
-                    <button onClick={() => handleAngleSliderChange(Math.min(180, angle + 5))} disabled={isFlying} className="w-12 h-12 pt-panel text-xl font-bold touch-manipulation disabled:opacity-30">+</button>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-bold text-[#333]">Power</span>
-                    <span className="text-lg font-bold text-[#1565C0]">{power}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => handlePowerSliderChange(Math.max(2, power - 10))} disabled={isFlying || isCurrentlyPowerLocked} className="w-12 h-12 pt-panel text-xl font-bold touch-manipulation disabled:opacity-30">−</button>
-                    <input type="range" min={2} max={100} value={power} disabled={isFlying || isCurrentlyPowerLocked} onChange={(e) => handlePowerSliderChange(Number(e.target.value))} className="flex-1 mobile-range accent-[#1565C0] disabled:opacity-30" />
-                    <button onClick={() => handlePowerSliderChange(Math.min(100, power + 10))} disabled={isFlying || isCurrentlyPowerLocked} className="w-12 h-12 pt-panel text-xl font-bold touch-manipulation disabled:opacity-30">+</button>
-                  </div>
-                </div>
-
+              <div className="px-2 pt-2 pb-2 space-y-2">
                 <div className="grid grid-cols-3 gap-2 items-stretch">
                   <button
                     onClick={() => moveActiveTank('back')}
                     disabled={isFlying || activeMovesLeft <= 0}
-                    className="py-4 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center gap-0.5"
+                    className="py-3 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center"
                   >
                     <ArrowLeft className="w-5 h-5" />
                     <span>Back</span>
-                    <span className="text-[10px] text-[#666]">{activeMovesLeft} left</span>
                   </button>
                   <button
                     onClick={fireActiveWeapon}
                     disabled={isFlying}
-                    className="py-4 rounded-2xl bg-red-600 active:bg-red-800 text-white text-2xl font-bold shadow-[0_4px_0_#991B1B] active:translate-y-1 touch-manipulation disabled:opacity-50 min-h-[72px]"
+                    className="py-3 rounded-2xl bg-red-600 active:bg-red-800 text-white text-xl font-bold shadow-[0_4px_0_#991B1B] active:translate-y-1 touch-manipulation disabled:opacity-50 min-h-[64px]"
                   >
                     {isFlying ? 'WAIT' : 'FIRE'}
                   </button>
                   <button
                     onClick={() => moveActiveTank('forward')}
                     disabled={isFlying || activeMovesLeft <= 0}
-                    className="py-4 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center gap-0.5"
+                    className="py-3 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center"
                   >
                     <ArrowRight className="w-5 h-5" />
                     <span>Fwd</span>
-                    <span className="text-[10px] text-[#666]">{activeMovesLeft} left</span>
                   </button>
                 </div>
 
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-[#ECE9D8] border border-[#999] px-2 py-1.5 rounded">
+                    <div className="flex justify-between text-xs font-bold mb-0.5">
+                      <span>Angle</span>
+                      <span className="text-[#E65100]">{angle}°</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => handleAngleSliderChange(Math.max(0, angle - 5))} disabled={isFlying} className="w-9 h-9 pt-panel text-lg font-bold touch-manipulation disabled:opacity-30">−</button>
+                      <input type="range" min={0} max={180} value={angle} disabled={isFlying} onChange={(e) => handleAngleSliderChange(Number(e.target.value))} className="flex-1 mobile-range accent-[#E65100]" />
+                      <button onClick={() => handleAngleSliderChange(Math.min(180, angle + 5))} disabled={isFlying} className="w-9 h-9 pt-panel text-lg font-bold touch-manipulation disabled:opacity-30">+</button>
+                    </div>
+                  </div>
+                  <div className="bg-[#ECE9D8] border border-[#999] px-2 py-1.5 rounded">
+                    <div className="flex justify-between text-xs font-bold mb-0.5">
+                      <span>Power</span>
+                      <span className="text-[#1565C0]">{power}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => handlePowerSliderChange(Math.max(2, power - 10))} disabled={isFlying || isCurrentlyPowerLocked} className="w-9 h-9 pt-panel text-lg font-bold touch-manipulation disabled:opacity-30">−</button>
+                      <input type="range" min={2} max={100} value={power} disabled={isFlying || isCurrentlyPowerLocked} onChange={(e) => handlePowerSliderChange(Number(e.target.value))} className="flex-1 mobile-range accent-[#1565C0] disabled:opacity-30" />
+                      <button onClick={() => handlePowerSliderChange(Math.min(100, power + 10))} disabled={isFlying || isCurrentlyPowerLocked} className="w-9 h-9 pt-panel text-lg font-bold touch-manipulation disabled:opacity-30">+</button>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
-                  <div className="text-xs font-bold text-[#555] uppercase mb-1.5">Pick weapon</div>
-                  <div className="flex gap-2 overflow-x-auto weapon-scroll-x pb-1 -mx-1 px-1">
+                  <div className="text-[10px] font-bold text-[#555] uppercase mb-1">Weapons · {activeMovesLeft} moves left</div>
+                  <div className="flex gap-1.5 overflow-x-auto weapon-scroll-x pb-1">
                     {WEAPONS.map((w) => {
                       const stock = activePlayer === 'p1' ? (p1Stock[w.id] || 0) : (p2Stock[w.id] || 0);
                       const outOfAmmo = stock <= 0;
                       const isSelected = selectedWeaponId === w.id;
+                      const shortName = w.name.length > 14 ? `${w.name.slice(0, 12)}…` : w.name;
                       return (
                         <button
                           key={w.id}
                           onClick={() => setSelectedWeaponId(w.id)}
                           disabled={isFlying || outOfAmmo}
-                          className={`shrink-0 px-3 py-2.5 rounded border-2 text-xs font-bold touch-manipulation min-h-[44px] ${isSelected ? 'bg-[#316AC5] border-[#1A3A7A] text-white' : 'bg-[#ECE9D8] border-[#999] text-[#333]'} disabled:opacity-30`}
+                          className={`shrink-0 px-2.5 py-2 rounded border-2 text-[11px] font-bold touch-manipulation min-h-[40px] max-w-[120px] ${isSelected ? 'bg-[#316AC5] border-[#1A3A7A] text-white' : 'bg-[#ECE9D8] border-[#999] text-[#333]'} disabled:opacity-30`}
                         >
-                          <span className="block whitespace-nowrap">{w.name}</span>
-                          <span className={`block text-center mt-0.5 ${isSelected ? 'text-yellow-200' : 'text-[#E65100]'}`}>×{stock}</span>
+                          <span className="block leading-tight">{shortName}</span>
+                          <span className={`block text-center text-[10px] mt-0.5 ${isSelected ? 'text-yellow-200' : 'text-[#E65100]'}`}>×{stock}</span>
                         </button>
                       );
                     })}

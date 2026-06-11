@@ -1,0 +1,10 @@
+{
+  "experimentalServices": {
+    "meme-tanks": {
+      "type": "web",
+      "routePrefix": "/",
+      "framework": "vite",
+      "buildCommand": "npm install && npm run build"
+    }
+  }
+}

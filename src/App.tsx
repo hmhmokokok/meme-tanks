@@ -800,13 +800,13 @@ export default function App() {
   const activeMovesLeft = activePlayer === 'p1' ? p1MovesLeft : p2MovesLeft;
 
   return (
-    <div className="w-screen h-screen bg-[#4DA8E8] text-[#1A1A1A] flex flex-col font-sans selection:bg-[#316AC5] selection:text-white overflow-hidden">
+    <div className="w-screen h-[100dvh] bg-[#4DA8E8] text-[#1A1A1A] flex flex-col font-sans selection:bg-[#316AC5] selection:text-white overflow-hidden">
       
       <div id="game-container" className="w-full h-full bg-gradient-to-b from-[#6EC4F5] to-[#4DA8E8] overflow-hidden flex flex-col relative">
         
         {/* GLOBAL HUD TOP BAR */}
         {phase === 'PLAYING' ? (
-          <header className="h-14 pt-titlebar px-4 md:px-6 grid grid-cols-[1fr_auto_1fr] items-center shrink-0 z-20 gap-4">
+          <header className="h-11 sm:h-14 pt-titlebar px-2 sm:px-4 md:px-6 grid grid-cols-[1fr_auto_1fr] items-center shrink-0 z-20 gap-1 sm:gap-4">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
               <div className="w-9 h-9 pt-panel-inset shrink-0 overflow-hidden">
                 <span className="w-full h-full flex items-center justify-center font-bold text-[#1A1A1A] text-xs" style={{ backgroundColor: p1Color }}>P1</span>
@@ -828,9 +828,9 @@ export default function App() {
                 <span className="text-sm font-bold text-[#333]">{Math.abs(Math.round(windSpeed * 120))}</span>
               </div>
               <div className="flex items-center pt-panel p-0.5">
-                <button onClick={() => setShowGuide(!showGuide)} className="p-1.5 text-[#333] hover:bg-[#B0B0B0] cursor-pointer" title="Weapon Guide"><HelpCircle className="w-3.5 h-3.5" /></button>
-                <button onClick={handleToggleSound} className="p-1.5 text-[#333] hover:bg-[#B0B0B0] cursor-pointer" title="Toggle Sound">{soundOn ? <Volume2 className="w-3.5 h-3.5 text-[#2E7D32]" /> : <VolumeX className="w-3.5 h-3.5" />}</button>
-                <button onClick={resetToMenu} className="p-1.5 text-[#333] hover:bg-[#FFCDD2] cursor-pointer" title="Quit Match"><RotateCcw className="w-3.5 h-3.5" /></button>
+                <button onClick={() => setShowGuide(!showGuide)} className="p-2.5 sm:p-1.5 text-[#333] hover:bg-[#B0B0B0] cursor-pointer touch-manipulation" title="Weapon Guide"><HelpCircle className="w-4 h-4 sm:w-3.5 sm:h-3.5" /></button>
+                <button onClick={handleToggleSound} className="p-2.5 sm:p-1.5 text-[#333] hover:bg-[#B0B0B0] cursor-pointer touch-manipulation" title="Toggle Sound">{soundOn ? <Volume2 className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-[#2E7D32]" /> : <VolumeX className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}</button>
+                <button onClick={resetToMenu} className="p-2.5 sm:p-1.5 text-[#333] hover:bg-[#FFCDD2] cursor-pointer touch-manipulation" title="Quit Match"><RotateCcw className="w-4 h-4 sm:w-3.5 sm:h-3.5" /></button>
               </div>
             </div>
 
@@ -905,7 +905,7 @@ export default function App() {
                 <h3 className="text-sm font-bold text-[#333] uppercase text-center">Choose Game Mode</h3>
                 <button
                   onClick={() => { setPlayMode('offline'); setLocalRole('both'); setMenuView('offline'); }}
-                  className="w-full py-4 pt-panel hover:bg-[#E8E8E8] flex items-center justify-center gap-3 cursor-pointer transition"
+                  className="w-full py-4 pt-panel hover:bg-[#E8E8E8] flex items-center justify-center gap-3 cursor-pointer transition touch-manipulation min-h-[56px]"
                 >
                   <Users className="w-6 h-6 text-[#316AC5]" />
                   <div className="text-left">
@@ -915,7 +915,7 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => { setMenuView('online'); setOnlineError(''); setLobbyStatus('idle'); }}
-                  className="w-full py-4 pt-panel hover:bg-[#E8E8E8] flex items-center justify-center gap-3 cursor-pointer transition"
+                  className="w-full py-4 pt-panel hover:bg-[#E8E8E8] flex items-center justify-center gap-3 cursor-pointer transition touch-manipulation min-h-[56px]"
                 >
                   <Wifi className="w-6 h-6 text-[#316AC5]" />
                   <div className="text-left">
@@ -1097,8 +1097,9 @@ export default function App() {
           </div>
           )}
 
-          <div className="mt-6 text-center text-[10px] text-white/80 max-w-md drop-shadow">
-            <span className="font-bold">↑/↓</span> aim • <span className="font-bold">←/→</span> power • <span className="font-bold">A/D</span> move • <span className="font-bold">Space</span> fire
+          <div className="mt-6 text-center text-[10px] text-white/80 max-w-md drop-shadow px-2">
+            <span className="hidden sm:inline"><span className="font-bold">↑/↓</span> aim • <span className="font-bold">←/→</span> power • <span className="font-bold">A/D</span> move • <span className="font-bold">Space</span> fire</span>
+            <span className="sm:hidden">Use on-screen sliders &amp; buttons to aim, move, and fire</span>
           </div>
 
         </main>
@@ -1146,24 +1147,24 @@ export default function App() {
       {phase === 'PLAYING' &&
         <div className="flex-1 flex flex-col min-h-0">
           
-          <div className="flex-1 flex items-center justify-center p-2 min-h-0">
-            <div className="pt-panel p-1 w-full max-w-[1200px] mx-auto">
+          <div className="flex-1 flex items-center justify-center p-1 sm:p-2 min-h-[24vh] lg:min-h-0">
+            <div className="pt-panel p-0.5 sm:p-1 w-full max-w-[1200px] mx-auto">
               <canvas
                 ref={canvasRef}
-                className="w-full h-auto block"
+                className="w-full h-auto block touch-none"
                 style={{ aspectRatio: `${CANVAS_WIDTH}/${CANVAS_HEIGHT}` }}
                 id="game-canvas"
               />
             </div>
           </div>
 
-          <div id="control-drawer" className="shrink-0 px-2 pb-2">
+          <div id="control-drawer" className="shrink-0 px-1 sm:px-2 pb-1 sm:pb-2 max-h-[52dvh] lg:max-h-none overflow-y-auto">
             <div className="pt-panel p-1 max-w-[1200px] mx-auto">
-              <div className="pt-panel-inset p-3 grid grid-cols-1 lg:grid-cols-[220px_1fr_190px] gap-3 min-h-[200px]">
+              <div className="pt-panel-inset p-2 sm:p-3 grid grid-cols-1 lg:grid-cols-[220px_1fr_190px] gap-2 sm:gap-3 lg:min-h-[200px]">
             
-            <div id="group-weapons" className="flex flex-col min-h-0">
+            <div id="group-weapons" className="flex flex-col min-h-0 order-2 lg:order-none">
               <div className="text-[9px] uppercase text-[#555] font-bold bg-[#C8C8C8] px-2 py-1 mb-2 text-center border border-[#999]">Weapons</div>
-              <div className="grid grid-cols-2 gap-1.5 overflow-y-auto flex-1 custom-scrollbar content-start">
+              <div className="flex lg:grid lg:grid-cols-2 gap-1.5 overflow-x-auto lg:overflow-y-auto lg:overflow-x-hidden flex-1 custom-scrollbar weapon-scroll-x lg:content-start pb-1 lg:pb-0">
                 {WEAPONS.map((w) => {
                   const currentStock = activePlayer === 'p1' ? p1Stock[w.id] : p2Stock[w.id];
                   const outOfAmmo = (currentStock || 0) <= 0;
@@ -1175,7 +1176,7 @@ export default function App() {
                       id={`weapon-btn-${w.id}`}
                       onClick={() => setSelectedWeaponId(w.id)}
                       disabled={isFlying || outOfAmmo || !canControl}
-                      className={`p-1.5 text-[9px] text-left cursor-pointer transition flex items-center justify-between gap-1 h-8 ${isSelected ? 'bg-[#316AC5] text-white font-bold pt-panel-inset' : 'pt-panel hover:bg-[#E8E8E8] text-[#333]'} disabled:opacity-30 disabled:cursor-not-allowed`}
+                      className={`p-2 sm:p-1.5 text-[10px] sm:text-[9px] text-left cursor-pointer transition flex items-center justify-between gap-1 h-10 sm:h-8 min-w-[130px] lg:min-w-0 shrink-0 lg:shrink touch-manipulation ${isSelected ? 'bg-[#316AC5] text-white font-bold pt-panel-inset' : 'pt-panel hover:bg-[#E8E8E8] text-[#333]'} disabled:opacity-30 disabled:cursor-not-allowed`}
                     >
                       <div className="flex items-center space-x-1 truncate">
                         <div className="w-2 h-2 shrink-0 border border-[#666]" style={{ backgroundColor: w.tintColor }} />
@@ -1190,7 +1191,7 @@ export default function App() {
               </div>
             </div>
 
-            <div id="group-instruments" className="flex flex-col justify-center border-y lg:border-y-0 lg:border-x border-[#999] px-2 lg:px-4 min-h-[180px]">
+            <div id="group-instruments" className="flex flex-col justify-center border-y lg:border-y-0 lg:border-x border-[#999] px-1 sm:px-2 lg:px-4 order-1 lg:order-none">
               {!isFlying && (
                 <div className="text-[9px] uppercase text-center text-[#555] font-bold mb-2 pb-1 border-b border-[#BBB]">
                   <span className="inline-block w-2 h-2 mr-1 align-middle" style={{ backgroundColor: activePlayer === 'p1' ? p1Color : p2Color }} />
@@ -1221,7 +1222,7 @@ export default function App() {
                     onClick={fireActiveWeapon}
                     disabled={isFlying}
                     id="fire-btn-blinded"
-                    className="w-20 h-20 rounded-full bg-red-600 hover:bg-red-500 active:bg-red-700 shadow-[0_4px_0_#991B1B,0_6px_12px_rgba(0,0,0,0.3)] hover:shadow-[0_2px_0_#991B1B,0_4px_8px_rgba(0,0,0,0.25)] active:shadow-[0_1px_0_#991B1B] active:translate-y-[3px] flex flex-col items-center justify-center transition-all cursor-pointer text-white shrink-0 font-bold text-sm disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
+                    className="w-24 h-24 sm:w-20 sm:h-20 rounded-full bg-red-600 hover:bg-red-500 active:bg-red-700 shadow-[0_4px_0_#991B1B,0_6px_12px_rgba(0,0,0,0.3)] hover:shadow-[0_2px_0_#991B1B,0_4px_8px_rgba(0,0,0,0.25)] active:shadow-[0_1px_0_#991B1B] active:translate-y-[3px] flex flex-col items-center justify-center transition-all cursor-pointer text-white shrink-0 font-bold text-sm disabled:opacity-50 disabled:shadow-none disabled:translate-y-0 touch-manipulation"
                   >
                     <span>FIRE</span>
                     <span className="text-[7px] opacity-80">BLIND</span>
@@ -1229,26 +1230,26 @@ export default function App() {
                 </div>
               ) : canControl ? (
                 <div className="space-y-2 w-full">
-                <div className="flex items-center justify-center gap-2 pt-panel-inset py-1.5 px-2">
-                  <span className="text-[9px] font-bold text-[#333] uppercase shrink-0">Move ({activeMovesLeft})</span>
+                <div className="flex items-center justify-center gap-2 pt-panel-inset py-2 px-2">
+                  <span className="text-[10px] sm:text-[9px] font-bold text-[#333] uppercase shrink-0">Move ({activeMovesLeft})</span>
                   <button
                     onClick={() => moveActiveTank('back')}
                     disabled={isFlying || activeMovesLeft <= 0}
-                    className="flex items-center gap-1 px-2 py-1 pt-panel text-[9px] font-bold cursor-pointer disabled:opacity-30"
+                    className="flex items-center gap-1 px-4 py-2.5 sm:px-2 sm:py-1 pt-panel text-[10px] sm:text-[9px] font-bold cursor-pointer disabled:opacity-30 touch-manipulation min-h-11"
                     title="Move back (A)"
                   >
-                    <ArrowLeft className="w-3 h-3" /> Back
+                    <ArrowLeft className="w-4 h-4 sm:w-3 sm:h-3" /> Back
                   </button>
                   <button
                     onClick={() => moveActiveTank('forward')}
                     disabled={isFlying || activeMovesLeft <= 0}
-                    className="flex items-center gap-1 px-2 py-1 pt-panel text-[9px] font-bold cursor-pointer disabled:opacity-30"
+                    className="flex items-center gap-1 px-4 py-2.5 sm:px-2 sm:py-1 pt-panel text-[10px] sm:text-[9px] font-bold cursor-pointer disabled:opacity-30 touch-manipulation min-h-11"
                     title="Move forward (D)"
                   >
-                    Fwd <ArrowRight className="w-3 h-3" />
+                    Fwd <ArrowRight className="w-4 h-4 sm:w-3 sm:h-3" />
                   </button>
                 </div>
-                <div className="grid grid-cols-[1fr_1fr_auto] items-center gap-3 w-full">
+                <div className="flex flex-col sm:grid sm:grid-cols-[1fr_1fr_auto] items-stretch sm:items-center gap-2 sm:gap-3 w-full">
                   
                   <div id="aim-dial-box" className="flex items-center gap-2 pt-panel-inset px-2 py-2">
                     <div className="relative w-12 h-12 shrink-0 pt-panel flex items-center justify-center bg-white mx-auto">
@@ -1261,9 +1262,9 @@ export default function App() {
                         <span className="text-[8px] text-[#888]">↑↓</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => handleAngleSliderChange(Math.max(0, angle - 5))} disabled={isFlying} className="text-[8px] pt-panel w-5 h-5 font-bold cursor-pointer disabled:opacity-25">-</button>
-                        <input type="range" min={0} max={180} value={angle} disabled={isFlying} onChange={(e) => handleAngleSliderChange(Number(e.target.value))} className="flex-1 h-1.5 accent-[#E65100] min-w-0" />
-                        <button onClick={() => handleAngleSliderChange(Math.min(180, angle + 5))} disabled={isFlying} className="text-[8px] pt-panel w-5 h-5 font-bold cursor-pointer disabled:opacity-25">+</button>
+                        <button onClick={() => handleAngleSliderChange(Math.max(0, angle - 5))} disabled={isFlying} className="text-sm sm:text-[8px] pt-panel w-10 h-10 sm:w-5 sm:h-5 font-bold cursor-pointer disabled:opacity-25 touch-manipulation">-</button>
+                        <input type="range" min={0} max={180} value={angle} disabled={isFlying} onChange={(e) => handleAngleSliderChange(Number(e.target.value))} className="flex-1 mobile-range accent-[#E65100] min-w-0 lg:h-1.5" />
+                        <button onClick={() => handleAngleSliderChange(Math.min(180, angle + 5))} disabled={isFlying} className="text-sm sm:text-[8px] pt-panel w-10 h-10 sm:w-5 sm:h-5 font-bold cursor-pointer disabled:opacity-25 touch-manipulation">+</button>
                       </div>
                     </div>
                   </div>
@@ -1282,9 +1283,9 @@ export default function App() {
                         <span className="text-[8px] text-[#888]">←→</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => handlePowerSliderChange(Math.max(2, power - 10))} disabled={isFlying || isCurrentlyPowerLocked} className="text-[8px] pt-panel w-5 h-5 font-bold cursor-pointer disabled:opacity-25">-</button>
-                        <input type="range" min={2} max={100} value={power} disabled={isFlying || isCurrentlyPowerLocked} onChange={(e) => handlePowerSliderChange(Number(e.target.value))} className="flex-1 h-1.5 accent-[#1565C0] min-w-0 disabled:opacity-30" />
-                        <button onClick={() => handlePowerSliderChange(Math.min(100, power + 10))} disabled={isFlying || isCurrentlyPowerLocked} className="text-[8px] pt-panel w-5 h-5 font-bold cursor-pointer disabled:opacity-25">+</button>
+                        <button onClick={() => handlePowerSliderChange(Math.max(2, power - 10))} disabled={isFlying || isCurrentlyPowerLocked} className="text-sm sm:text-[8px] pt-panel w-10 h-10 sm:w-5 sm:h-5 font-bold cursor-pointer disabled:opacity-25 touch-manipulation">-</button>
+                        <input type="range" min={2} max={100} value={power} disabled={isFlying || isCurrentlyPowerLocked} onChange={(e) => handlePowerSliderChange(Number(e.target.value))} className="flex-1 mobile-range accent-[#1565C0] min-w-0 disabled:opacity-30 lg:h-1.5" />
+                        <button onClick={() => handlePowerSliderChange(Math.min(100, power + 10))} disabled={isFlying || isCurrentlyPowerLocked} className="text-sm sm:text-[8px] pt-panel w-10 h-10 sm:w-5 sm:h-5 font-bold cursor-pointer disabled:opacity-25 touch-manipulation">+</button>
                       </div>
                     </div>
                   </div>
@@ -1293,10 +1294,10 @@ export default function App() {
                     onClick={fireActiveWeapon}
                     disabled={isFlying}
                     id="fire-btn-playing"
-                    className="w-[76px] h-[76px] rounded-full bg-red-600 hover:bg-red-500 active:bg-red-700 shadow-[0_4px_0_#991B1B,0_6px_14px_rgba(0,0,0,0.35)] hover:shadow-[0_2px_0_#991B1B,0_4px_10px_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_#991B1B] active:translate-y-[3px] flex flex-col items-center justify-center transition-all cursor-pointer text-white shrink-0 font-bold disabled:opacity-50 disabled:shadow-none disabled:translate-y-0 justify-self-center border-2 border-red-800"
+                    className="w-[88px] h-[88px] sm:w-[76px] sm:h-[76px] mx-auto sm:mx-0 rounded-full bg-red-600 hover:bg-red-500 active:bg-red-700 shadow-[0_4px_0_#991B1B,0_6px_14px_rgba(0,0,0,0.35)] hover:shadow-[0_2px_0_#991B1B,0_4px_10px_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_#991B1B] active:translate-y-[3px] flex flex-col items-center justify-center transition-all cursor-pointer text-white shrink-0 font-bold disabled:opacity-50 disabled:shadow-none disabled:translate-y-0 justify-self-center border-2 border-red-800 touch-manipulation"
                   >
-                    <span className="text-base tracking-wide">FIRE</span>
-                    <span className="text-[7px] opacity-80 uppercase">{isFlying ? 'Wait' : 'Space'}</span>
+                    <span className="text-lg sm:text-base tracking-wide">FIRE</span>
+                    <span className="text-[8px] sm:text-[7px] opacity-80 uppercase">{isFlying ? 'Wait' : 'Tap'}</span>
                   </button>
                 </div>
                 </div>
@@ -1306,13 +1307,13 @@ export default function App() {
             {(() => {
               const weapon = WEAPONS.find((w) => w.id === selectedWeaponId);
               if (!weapon) return (
-                <div id="no-weapon-intel" className="pt-panel-inset p-3 flex flex-col text-center justify-center text-[10px] text-[#888] italic min-h-[160px]">
+                <div id="no-weapon-intel" className="hidden md:flex pt-panel-inset p-3 flex-col text-center justify-center text-[10px] text-[#888] italic min-h-[160px] order-3 lg:order-none">
                   Select a weapon.
                 </div>
               );
 
               return (
-                <div id="weapon-intel-card" className="pt-panel-inset p-3 flex flex-col justify-between min-h-[160px]">
+                <div id="weapon-intel-card" className="hidden md:flex pt-panel-inset p-3 flex-col justify-between min-h-[160px] order-3 lg:order-none">
                   <div>
                     <div className="text-[8px] text-[#316AC5] font-bold uppercase mb-1 text-center border-b border-[#CCC] pb-1">Selected</div>
                     <div className="text-[11px] font-bold text-[#1A1A1A] truncate mt-1">{weapon.name}</div>

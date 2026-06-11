@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, RotateCcw, Volume2, VolumeX, Shield, Swords, HelpCircle, Flame, MessageSquare, Info, Users, Wifi, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Play, RotateCcw, Volume2, VolumeX, Shield, Swords, HelpCircle, Flame, MessageSquare, Info, Users, Wifi, ArrowLeft, ArrowRight, Smartphone, Monitor, RefreshCw } from 'lucide-react';
 import { WEAPONS } from './data';
 import { TankState, Projectile, Particle, FloatingText, GamePhase, PlayMode, LocalPlayerRole } from './types';
 import { generateTerrain, carveCrater, carveBottomlessVoid } from './lib/terrain';
@@ -35,6 +35,14 @@ import {
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './lib/constants';
 const INITIAL_GRAVITY = 0.16;
 
+type MobileViewMode = 'auto' | 'portrait' | 'landscape';
+
+function readMobileViewMode(): MobileViewMode {
+  const saved = localStorage.getItem('meme-tanks-mobile-view');
+  if (saved === 'portrait' || saved === 'landscape' || saved === 'auto') return saved;
+  return 'landscape';
+}
+
 export default function App() {
   // Game state
   const [phase, setPhase] = useState<GamePhase>('START_SCREEN');
@@ -61,6 +69,10 @@ export default function App() {
   const [showGuide, setShowGuide] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
   const [soundOn, setSoundOn] = useState(true);
+  const [mobileView, setMobileView] = useState<MobileViewMode>(readMobileViewMode);
+  const [isPortrait, setIsPortrait] = useState(() =>
+    typeof window !== 'undefined' ? window.innerHeight >= window.innerWidth : true
+  );
 
   // Play mode & online
   const [playMode, setPlayMode] = useState<PlayMode>('offline');
@@ -100,6 +112,30 @@ export default function App() {
     particles: [],
     floatingTexts: []
   });
+
+  useEffect(() => {
+    localStorage.setItem('meme-tanks-mobile-view', mobileView);
+  }, [mobileView]);
+
+  useEffect(() => {
+    const updateOrientation = () => setIsPortrait(window.innerHeight >= window.innerWidth);
+    updateOrientation();
+    window.addEventListener('resize', updateOrientation);
+    window.addEventListener('orientationchange', updateOrientation);
+    return () => {
+      window.removeEventListener('resize', updateOrientation);
+      window.removeEventListener('orientationchange', updateOrientation);
+    };
+  }, []);
+
+  const useLandscapeLayout =
+    mobileView === 'landscape' || (mobileView === 'auto' && !isPortrait);
+  const usePortraitLayout =
+    mobileView === 'portrait' || (mobileView === 'auto' && isPortrait);
+  const showRotatePrompt =
+    phase === 'PLAYING' &&
+    mobileView === 'landscape' &&
+    isPortrait;
 
   // Sound handler
   const handleToggleSound = () => {
@@ -802,6 +838,55 @@ export default function App() {
   const activePlayerName = activePlayer === 'p1' ? p1Name : p2Name;
   const activePlayerColor = activePlayer === 'p1' ? p1Color : p2Color;
 
+  const mobileLayoutToggle = (
+    <div className="lg:hidden w-full max-w-md pt-panel p-1 shadow-lg">
+      <div className="pt-panel-inset p-3">
+        <p className="text-xs font-bold text-[#333] uppercase text-center mb-1">Phone layout</p>
+        <p className="text-[10px] text-[#666] text-center mb-2 leading-snug">
+          <strong>Landscape</strong> = bigger map, controls on the side (recommended).{' '}
+          <strong>Portrait</strong> = controls below the map. <strong>Auto</strong> follows your rotation.
+        </p>
+        <div className="grid grid-cols-3 gap-1">
+          {([
+            { id: 'auto' as const, label: 'Auto', icon: RefreshCw },
+            { id: 'landscape' as const, label: 'Landscape', icon: Monitor },
+            { id: 'portrait' as const, label: 'Portrait', icon: Smartphone },
+          ]).map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setMobileView(id)}
+              className={`py-2.5 px-1 flex flex-col items-center gap-1 touch-manipulation text-[10px] font-bold uppercase ${mobileView === id ? 'bg-[#316AC5] text-white' : 'pt-panel text-[#333] hover:bg-[#E8E8E8]'}`}
+            >
+              <Icon className="w-4 h-4" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const mobileLayoutToggleCompact = (
+    <div className="lg:hidden flex gap-0.5 pt-panel p-0.5 shrink-0" title="Phone layout">
+      {([
+        { id: 'auto' as const, label: 'Auto' },
+        { id: 'landscape' as const, label: 'Wide' },
+        { id: 'portrait' as const, label: 'Tall' },
+      ]).map(({ id, label }) => (
+        <button
+          key={id}
+          type="button"
+          title={id === 'landscape' ? 'Landscape — map + side controls' : id === 'portrait' ? 'Portrait — stacked controls' : 'Auto — follow phone rotation'}
+          onClick={() => setMobileView(id)}
+          className={`px-1.5 py-1 text-[8px] font-bold uppercase touch-manipulation min-w-[32px] ${mobileView === id ? 'bg-[#316AC5] text-white' : 'text-[#333]'}`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div className="w-screen h-[100dvh] bg-[#4DA8E8] text-[#1A1A1A] flex flex-col font-sans selection:bg-[#316AC5] selection:text-white overflow-hidden">
       
@@ -811,10 +896,10 @@ export default function App() {
         {phase === 'PLAYING' ? (
           <>
             {/* Mobile HUD — compact, readable */}
-            <header className="lg:hidden shrink-0 pt-titlebar px-2 py-2 z-20">
-              <div className="flex items-center gap-2 mb-1.5">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 mb-0.5">
+            <header className="lg:hidden shrink-0 pt-titlebar px-2 py-2 max-lg:landscape:py-1 z-20">
+              <div className="flex items-center gap-2 max-lg:landscape:mb-0 portrait:mb-1.5">
+                <div className="flex-1 min-w-0 max-lg:landscape:grid max-lg:landscape:grid-cols-2 max-lg:landscape:gap-x-2">
+                  <div className="flex items-center gap-1.5 mb-0.5 max-lg:landscape:mb-0">
                     <span className="w-7 h-7 shrink-0 flex items-center justify-center text-[10px] font-bold text-[#1A1A1A] pt-panel-inset" style={{ backgroundColor: p1Color }}>P1</span>
                     <div className="flex-1 h-4 bg-black/25 rounded overflow-hidden">
                       <div className="h-full bg-[#43A047]" style={{ width: `${Math.max(0, p1Health)}%` }} />
@@ -833,9 +918,12 @@ export default function App() {
                   <span className="text-[9px] text-white/80 font-bold uppercase">Wind</span>
                   <span className="text-sm font-bold text-white">{windSpeed >= 0 ? '→' : '←'}{Math.abs(Math.round(windSpeed * 120))}</span>
                 </div>
-                <div className="flex flex-col gap-1 shrink-0">
-                  <button onClick={handleToggleSound} className="p-2 pt-panel touch-manipulation" title="Sound">{soundOn ? <Volume2 className="w-5 h-5 text-[#2E7D32]" /> : <VolumeX className="w-5 h-5" />}</button>
-                  <button onClick={resetToMenu} className="p-2 pt-panel touch-manipulation" title="Quit"><RotateCcw className="w-5 h-5 text-[#C62828]" /></button>
+                <div className="flex flex-col gap-1 shrink-0 items-end">
+                  {mobileLayoutToggleCompact}
+                  <div className="flex gap-1">
+                    <button onClick={handleToggleSound} className="p-2 pt-panel touch-manipulation" title="Sound">{soundOn ? <Volume2 className="w-5 h-5 text-[#2E7D32]" /> : <VolumeX className="w-5 h-5" />}</button>
+                    <button onClick={resetToMenu} className="p-2 pt-panel touch-manipulation" title="Quit"><RotateCcw className="w-5 h-5 text-[#C62828]" /></button>
+                  </div>
                 </div>
               </div>
             </header>
@@ -936,6 +1024,8 @@ export default function App() {
           </div>
 
           {menuView === 'pick' && (
+            <>
+              <div className="w-full max-w-md mb-4">{mobileLayoutToggle}</div>
             <div className="w-full max-w-md pt-panel p-1 shadow-lg">
               <div className="pt-panel-inset p-6 space-y-4">
                 <h3 className="text-sm font-bold text-[#333] uppercase text-center">Choose Game Mode</h3>
@@ -961,6 +1051,7 @@ export default function App() {
                 </button>
               </div>
             </div>
+            </>
           )}
 
           {menuView === 'online' && (
@@ -1133,9 +1224,15 @@ export default function App() {
           </div>
           )}
 
-          <div className="mt-6 text-center text-[10px] text-white/80 max-w-md drop-shadow px-2">
+          <div className="mt-4 px-4 w-full flex justify-center lg:hidden">{mobileLayoutToggle}</div>
+
+          <div className="mt-2 text-center text-[10px] text-white/80 max-w-md drop-shadow px-2 lg:hidden">
             <span className="hidden sm:inline"><span className="font-bold">↑/↓</span> aim • <span className="font-bold">←/→</span> power • <span className="font-bold">A/D</span> move • <span className="font-bold">Space</span> fire</span>
-            <span className="sm:hidden">Use sliders &amp; buttons to play. Rotate to landscape for a bigger battlefield.</span>
+            <span className="sm:hidden lg:hidden">
+              {mobileView === 'landscape' && 'Landscape mode — rotate phone sideways for the best view.'}
+              {mobileView === 'portrait' && 'Portrait mode — controls stack below the map.'}
+              {mobileView === 'auto' && 'Auto layout — rotates with your phone. Landscape recommended.'}
+            </span>
           </div>
 
         </main>
@@ -1181,12 +1278,38 @@ export default function App() {
       )}
       {/* PLAYING PHASE */}
       {phase === 'PLAYING' && (
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <div className="flex-1 min-h-[42dvh] lg:min-h-0 flex items-center justify-center bg-[#1a3a5c]/30 px-0.5 lg:p-2">
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+          {showRotatePrompt && (
+            <div className="lg:hidden absolute inset-0 z-40 bg-[#1A3A7A]/95 flex flex-col items-center justify-center p-6 text-center text-white">
+              <Monitor className="w-14 h-14 mb-4 opacity-90" />
+              <h3 className="text-lg font-bold mb-2">Rotate to Landscape</h3>
+              <p className="text-sm text-white/90 mb-6 max-w-xs">You chose Landscape — turn your phone sideways for the full battlefield view.</p>
+              <button
+                type="button"
+                onClick={() => setMobileView('portrait')}
+                className="py-3 px-6 bg-white text-[#316AC5] font-bold rounded-lg touch-manipulation"
+              >
+                Use Tall (Portrait) Instead
+              </button>
+            </div>
+          )}
+
+          {mobileView === 'auto' && isPortrait && (
+            <p className="lg:hidden shrink-0 bg-[#1A3A7A] text-white text-xs text-center py-1.5 font-bold">
+              ↻ Rotate sideways for landscape — or pick Landscape in Phone layout below
+            </p>
+          )}
+
+          <div
+            className={`flex-1 flex flex-col min-h-0 overflow-hidden mobile-landscape-play ${
+              useLandscapeLayout && !showRotatePrompt ? 'force-mobile-landscape' : ''
+            } ${mobileView === 'portrait' ? 'force-mobile-portrait' : ''}`}
+          >
+          <div className="flex-1 min-h-[40dvh] max-lg:landscape:min-h-0 lg:min-h-0 flex items-center justify-center bg-[#1a3a5c]/30 px-0.5 lg:p-2 mobile-landscape-canvas">
             <div className="w-full h-full max-w-[1200px] flex items-center justify-center lg:pt-panel lg:p-1">
               <canvas
                 ref={canvasRef}
-                className="w-full h-auto max-h-full lg:h-auto block touch-none"
+                className="w-full h-auto max-h-full max-lg:landscape:max-h-[calc(100dvh-52px)] lg:h-auto block touch-none game-canvas-el"
                 style={{ aspectRatio: `${CANVAS_WIDTH}/${CANVAS_HEIGHT}` }}
                 id="game-canvas"
               />
@@ -1194,7 +1317,7 @@ export default function App() {
           </div>
 
           {/* MOBILE CONTROLS */}
-          <div className="lg:hidden shrink-0 max-h-[46dvh] overflow-y-auto bg-[#C8C8C8] border-t-2 border-[#808080] mobile-safe-bottom">
+          <div className="lg:hidden shrink-0 portrait:max-h-[48dvh] portrait:overflow-y-auto bg-[#C8C8C8] portrait:border-t-2 border-[#808080] mobile-safe-bottom mobile-landscape-controls">
             {isFlying && (
               <div className="bg-[#FFE0B2] text-[#E65100] text-sm font-bold text-center py-2">Projectile in flight...</div>
             )}
@@ -1224,11 +1347,19 @@ export default function App() {
 
             {canControl && !isCurrentlyBlinded && (
               <div className="px-2 pt-2 pb-2 space-y-2">
-                <div className="grid grid-cols-3 gap-2 items-stretch">
+                <button
+                  onClick={fireActiveWeapon}
+                  disabled={isFlying}
+                  className="hidden max-lg:landscape:flex w-full py-2.5 rounded-xl bg-red-600 active:bg-red-800 text-white text-lg font-bold justify-center touch-manipulation disabled:opacity-50 min-h-[48px]"
+                >
+                  {isFlying ? 'WAIT' : 'FIRE'}
+                </button>
+
+                <div className="grid grid-cols-3 gap-2 items-stretch max-lg:landscape:grid-cols-1 max-lg:landscape:gap-1">
                   <button
                     onClick={() => moveActiveTank('back')}
                     disabled={isFlying || activeMovesLeft <= 0}
-                    className="py-3 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center"
+                    className="py-2.5 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center max-lg:landscape:flex-row max-lg:landscape:gap-1"
                   >
                     <ArrowLeft className="w-5 h-5" />
                     <span>Back</span>
@@ -1236,21 +1367,21 @@ export default function App() {
                   <button
                     onClick={fireActiveWeapon}
                     disabled={isFlying}
-                    className="py-3 rounded-2xl bg-red-600 active:bg-red-800 text-white text-xl font-bold shadow-[0_4px_0_#991B1B] active:translate-y-1 touch-manipulation disabled:opacity-50 min-h-[64px]"
+                    className="max-lg:landscape:hidden py-3 rounded-2xl bg-red-600 active:bg-red-800 text-white text-xl font-bold shadow-[0_4px_0_#991B1B] active:translate-y-1 touch-manipulation disabled:opacity-50 min-h-[64px] flex flex-col items-center justify-center"
                   >
                     {isFlying ? 'WAIT' : 'FIRE'}
                   </button>
                   <button
                     onClick={() => moveActiveTank('forward')}
                     disabled={isFlying || activeMovesLeft <= 0}
-                    className="py-3 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center"
+                    className="py-2.5 pt-panel text-sm font-bold touch-manipulation disabled:opacity-30 flex flex-col items-center justify-center max-lg:landscape:flex-row max-lg:landscape:gap-1"
                   >
                     <ArrowRight className="w-5 h-5" />
                     <span>Fwd</span>
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="portrait:grid portrait:grid-cols-2 portrait:gap-2 max-lg:landscape:space-y-2">
                   <div className="bg-[#ECE9D8] border border-[#999] px-2 py-1.5 rounded">
                     <div className="flex justify-between text-xs font-bold mb-0.5">
                       <span>Angle</span>
@@ -1276,8 +1407,8 @@ export default function App() {
                 </div>
 
                 <div>
-                  <div className="text-[10px] font-bold text-[#555] uppercase mb-1">Weapons · {activeMovesLeft} moves left</div>
-                  <div className="flex gap-1.5 overflow-x-auto weapon-scroll-x pb-1">
+                  <div className="text-[10px] font-bold text-[#555] uppercase mb-1">Weapons · {activeMovesLeft} moves</div>
+                  <div className="flex gap-1.5 overflow-x-auto weapon-scroll-x pb-1 mobile-landscape-weapons">
                     {WEAPONS.map((w) => {
                       const stock = activePlayer === 'p1' ? (p1Stock[w.id] || 0) : (p2Stock[w.id] || 0);
                       const outOfAmmo = stock <= 0;
@@ -1299,6 +1430,7 @@ export default function App() {
                 </div>
               </div>
             )}
+          </div>
           </div>
 
           {/* DESKTOP CONTROLS */}

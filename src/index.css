@@ -136,3 +136,93 @@ input, select, textarea {
 .weapon-scroll-x::-webkit-scrollbar {
   height: 6px;
 }
+
+/* Mobile landscape: canvas left, controls right (best on phones) */
+@media (max-width: 1023px) {
+  .force-mobile-landscape.mobile-landscape-play {
+    flex-direction: row !important;
+  }
+
+  .force-mobile-landscape .mobile-landscape-canvas {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+  }
+
+  .force-mobile-landscape .game-canvas-el {
+    width: 100% !important;
+    height: auto !important;
+    max-height: calc(100dvh - 48px) !important;
+    object-fit: contain;
+  }
+
+  .force-mobile-landscape .mobile-landscape-controls {
+    flex: 0 0 min(42vw, 300px) !important;
+    max-height: none !important;
+    border-top: none !important;
+    border-left: 2px solid #808080 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .force-mobile-landscape .mobile-landscape-weapons {
+    flex-direction: column !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-height: 140px !important;
+    align-items: stretch !important;
+  }
+
+  .force-mobile-landscape .mobile-landscape-weapons button {
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  .force-mobile-portrait.mobile-landscape-play {
+    flex-direction: column !important;
+  }
+
+  .force-mobile-portrait .mobile-landscape-controls {
+    flex: 0 0 auto !important;
+    max-height: 48dvh !important;
+    border-left: none !important;
+    border-top: 2px solid #808080 !important;
+  }
+}
+
+@media (max-width: 1023px) and (orientation: landscape) {
+  .mobile-landscape-play:not(.force-mobile-portrait) {
+    flex-direction: row !important;
+  }
+
+  .mobile-landscape-play:not(.force-mobile-portrait) .mobile-landscape-canvas {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+  }
+
+  .mobile-landscape-play:not(.force-mobile-portrait) .mobile-landscape-controls {
+    flex: 0 0 min(42vw, 300px) !important;
+    max-height: none !important;
+    border-top: none !important;
+    border-left: 2px solid #808080 !important;
+    overflow-y: auto !important;
+  }
+
+  .mobile-landscape-play:not(.force-mobile-portrait) .game-canvas-el {
+    max-height: calc(100dvh - 48px) !important;
+  }
+
+  .mobile-landscape-play:not(.force-mobile-portrait) .mobile-landscape-weapons {
+    flex-direction: column !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-height: 140px !important;
+    align-items: stretch !important;
+  }
+
+  .mobile-landscape-play:not(.force-mobile-portrait) .mobile-landscape-weapons button {
+    max-width: none !important;
+    width: 100% !important;
+  }
+}
